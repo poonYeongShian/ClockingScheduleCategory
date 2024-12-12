@@ -32,7 +32,7 @@ namespace ClockingScheduleCategory
                 _replicaConnectionString = ConfigurationManager.ConnectionStrings["LocalConnectionString"]?.ConnectionString.ToString();
 
                 // Retrieve Company Id from schedule table
-                var companyIds = GetDistinctCompanyIds(_replicaConnectionString); //3394 company id
+                var companyIds = InsertDefaultScheduleCategory(_replicaConnectionString); //3394 company id
             }
             catch (Exception ex)
             {
@@ -51,15 +51,13 @@ namespace ClockingScheduleCategory
             }
         }
 
-        static List<int> GetDistinctCompanyIds(string replicaConnectionString)
+        static bool InsertDefaultScheduleCategory(string replicaConnectionString)
         {
             _clockingScheduleDA = new ClockingScheduleDA(_replicaConnectionString);
 
-            var dtClockingSchedule = _clockingScheduleDA.GetDistinctCompanyIds();
+            bool isSuccess = _clockingScheduleDA.InsertDefaultScheduleCategory() > 0;
 
-            return dtClockingSchedule.AsEnumerable()
-                                     .Select(dr => Convert.ToInt32(dr["Company_ID"]))
-                                     .ToList();
+            return isSuccess;
             //    AutoNo = Convert.ToUInt64(dr["Auto_No"]),
             //    CompanyId = dr["Company_ID"].ToString(),
             //    UserID = Convert.ToUInt64(dr["UserID"]),

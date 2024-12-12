@@ -15,18 +15,32 @@ namespace ClockingScheduleCategory.DataAccess
             _DBHelper = new DBHelper(connectionString);
         }
 
-        internal DataTable GetDistinctCompanyIds()
+        internal int InsertDefaultScheduleCategory()
         {
             DataTable dt = new DataTable();
-            string query = $@"SELECT DISTINCT s.Company_ID
-                              FROM schedule s
-                              WHERE NOT EXISTS (
-                                  SELECT 1
-                                  FROM schedule_category sc
-                                  WHERE s.Company_ID = sc.Company_ID
-                              );";
+            string query = $@"INSERT INTO schedule_category (`company_id`, `name`, `is_default`, `created_on`, `updated_on`)
+                                SELECT 
+                                    `Company_ID`, 
+                                    `name`, 
+                                    is_default, 
+                                    @createdOn, 
+                                    @createdOn
+                                FROM (
+                                    SELECT DISTINCT s.Company_ID
+                                    FROM `schedule` s
+                                    WHERE NOT EXISTS (
+                                        SELECT 1
+                                        FROM schedule_category sc
+                                        WHERE s.Company_ID = sc.company_id
+                                    )
+                                ) AS sch
+                                CROSS JOIN default_schedule_category dsc
+                                ORDER BY `Company_ID`, `auto_no`;";
 
-            return _DBHelper.RetrieveRecord(query, new List<MySqlParameter>());
+            return _DBHelper.CreateRecord(query, new List<MySqlParameter>()
+            {
+                new MySqlParameter("@createdOn", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss"))
+            });
         }
     }
 }
