@@ -18,10 +18,11 @@ namespace ClockingScheduleCategory.DataAccess
         internal int InsertDefaultScheduleCategory()
         {
             DataTable dt = new DataTable();
-            string query = $@"INSERT INTO schedule_category (`company_id`, `name`, `is_default`, `created_on`, `updated_on`)
+            string query = $@"INSERT INTO schedule_category (`company_id`, `name`, `code`, `is_default`, `created_on`, `updated_on`)
                                 SELECT 
                                     `Company_ID`, 
                                     `name`, 
+                                    `code`,
                                     is_default, 
                                     @createdOn, 
                                     @createdOn

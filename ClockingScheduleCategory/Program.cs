@@ -32,7 +32,11 @@ namespace ClockingScheduleCategory
                 _replicaConnectionString = ConfigurationManager.ConnectionStrings["LocalConnectionString"]?.ConnectionString.ToString();
 
                 // Retrieve Company Id from schedule table
-                var companyIds = InsertDefaultScheduleCategory(_replicaConnectionString); //3394 company id
+                if (InsertDefaultScheduleCategory(_replicaConnectionString))
+                {
+                    Log.Information("Default schedule category inserted successfully");
+                } //3394 company id
+                // Update schedules to corresponding categories in a batcth
             }
             catch (Exception ex)
             {
@@ -41,13 +45,6 @@ namespace ClockingScheduleCategory
             finally
             {
                 Log.Information("Service stopped");
-
-                // Loop through company, add default sche categories
-
-
-                // Update schudule table with default schedule categories id
-
-
             }
         }
 
@@ -58,14 +55,6 @@ namespace ClockingScheduleCategory
             bool isSuccess = _clockingScheduleDA.InsertDefaultScheduleCategory() > 0;
 
             return isSuccess;
-            //    AutoNo = Convert.ToUInt64(dr["Auto_No"]),
-            //    CompanyId = dr["Company_ID"].ToString(),
-            //    UserID = Convert.ToUInt64(dr["UserID"]),
-            //    UID = Convert.ToUInt64(dr["UID"]),
-            //    CheckTime = Convert.ToDateTime(dr["CheckTime"]),
-            //    TerminalSn = dr["SerialNo"].ToString(),
-            //}).ToList();
-            //return new List<int>();
         }
     }
 }
