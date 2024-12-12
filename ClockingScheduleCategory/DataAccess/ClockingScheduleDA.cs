@@ -17,7 +17,6 @@ namespace ClockingScheduleCategory.DataAccess
 
         internal int InsertDefaultScheduleCategory()
         {
-            DataTable dt = new DataTable();
             string query = $@"INSERT INTO schedule_category (`company_id`, `name`, `code`, `is_default`, `created_on`, `updated_on`)
                                 SELECT 
                                     `Company_ID`, 
@@ -42,6 +41,17 @@ namespace ClockingScheduleCategory.DataAccess
             {
                 new MySqlParameter("@createdOn", DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss"))
             });
+        }
+
+        internal bool UpdateScheduleCategoryId()
+        {
+            string query = $@"UPDATE `schedule` s
+                                JOIN schedule_category sc ON s.Company_ID = sc.company_id 
+                                     AND s.ScheCategory = sc.code
+                              SET s.ScheCategory = sc.auto_no
+                              WHERE s.ScheCategory != 0;";
+
+            return _DBHelper.UpdateRecord(query, new List<MySqlParameter>());
         }
     }
 }

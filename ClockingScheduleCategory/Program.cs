@@ -31,12 +31,17 @@ namespace ClockingScheduleCategory
             {
                 _replicaConnectionString = ConfigurationManager.ConnectionStrings["LocalConnectionString"]?.ConnectionString.ToString();
 
-                // Retrieve Company Id from schedule table
+                // SQL check the company id not in schedule category and insert default schedule category
                 if (InsertDefaultScheduleCategory(_replicaConnectionString))
                 {
                     Log.Information("Default schedule category inserted successfully");
-                } //3394 company id
-                // Update schedules to corresponding categories in a batcth
+                }
+                // SQL update schedule's category id, change 1,2,3,4 to its corresponding category id in schedule_category table
+                if (UpdateScheduleCategoryId(_replicaConnectionString))
+                {
+                    Log.Information("Schedule category id updated successfully");
+                }
+
             }
             catch (Exception ex)
             {
@@ -53,6 +58,14 @@ namespace ClockingScheduleCategory
             _clockingScheduleDA = new ClockingScheduleDA(_replicaConnectionString);
 
             bool isSuccess = _clockingScheduleDA.InsertDefaultScheduleCategory() > 0;
+
+            return isSuccess;
+        }        
+        static bool UpdateScheduleCategoryId(string replicaConnectionString)
+        {
+            _clockingScheduleDA = new ClockingScheduleDA(_replicaConnectionString);
+
+            bool isSuccess = _clockingScheduleDA.UpdateScheduleCategoryId();
 
             return isSuccess;
         }
